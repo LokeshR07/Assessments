@@ -1,0 +1,29 @@
+1.
+
+2.Create view call_feb as Select customerid, sum(callduration) as sum from customerinteractions where month="february" and year= 2024 group by customerid;
+Create view call_mar as Select customerid, sum(callduration) as sum from customerinteractions where month="march" and year= 2024 group by customerid;
+Select call_mar.customerid from call_mar join call_feb on call_mar.customerid= call_feb.customerid where(call_mar.sum>call_feb.sum);
+
+3.Select call_mar.customerid from call_mar join call_feb on call_mar.customerid= call_feb.customerid where(call_mar.sum_message<call_feb.sum_message and call_mar.sum_data > call_feb.sum_data);
+
+
+4.Select producttypeid, sum(totalsalesamount) as total_sales from quarterlysales where producttypeid=1 group by producttypeid;
+
+5. Select producttypeid, sum(totalsalesamount) as total_sales from quarterlysales where quarter="q1" and year=2024 group by producttypeid order by total_sales DESC Limit 1;
+
+6.Select producttypeid, Round((sum(totalsalesamount)/sum(unitssold)),2)as average_slaes_per_unit from quarterlysales where producttypeid = 1 and year =2024 and quarter="q2" group by producttypeid;
+
+7.
+
+8.Create view Feb as Select sector, sum(consumptionkwh) as sum from sectorenergyconsumption where month="february" group by sector;
+Create view Mar as Select sector, sum(consumptionkwh) as sum from sectorenergyconsumption where month="March" group by sector;
+Select mar.sector from mar join feb on mar.sector= feb.sector where(mar.sum>feb.sum);
+
+9.Select energysource, sum(consumptionKWH) as total from sectorenergyconsumption where year = 2024 and month = "February" group by energysource order by total Desc;
+
+10.Select customername from insuranceactivities where claimscount>1;
+
+11.Select customername, sum(annualpremium) as sum from insuranceactivities where claimscount > 1 group by customername;
+
+
+12.
