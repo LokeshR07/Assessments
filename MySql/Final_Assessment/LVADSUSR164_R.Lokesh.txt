@@ -1,0 +1,45 @@
+1. Select p.product_category , Round(avg(s.sales_amount),2) from products p join sales_records s using(product_id) where sales_date > date_sub(current_date(), Interval 30 day) group by p.product_category;
+
+2. Select product_id, sum(sales_amount) as total_sales, rank() over(order by sum(sales_amount) Desc) rn from sales_records where Year(sales_date) = year(current_date()) group by product_id order by rn Limit 3; 
+
+3. Select customer_id, customer_name, sum(sales_amount) as total_amount, rank() over(order by sum(sales_amount) Desc) as rn, Round(((sum(sales_amount)/(select sum(sales_amount) from sales_records))*100),2)  as contribution from customers join sales_records using(customer_id) group by customer_id, customer_name;
+
+4. Select * , case 
+when a.total_buy >=4 then "Consistent Buyers"
+Else "Occasional Buyers" End as Buyer_type
+from (Select customer_id, count(customer_id) as total_buy from sales_records where sales_date> date_Sub(current_date(), Interval 3 month) group by customer_id) as a;
+
+5. Select distinct(concat(f.departure_airport," to ",f.arrival_airport))  as flight_route, Round(avg(t.ticket_price),2) as Average_ticket_price from tickets t join flights f using(flight_id) group by f.departure_airport,f.arrival_airport;
+
+6. Select flight_id, f.departure_date, count(t.passenger_id) as total_passangers from tickets t join flights f using(flight_id) where month(t.ticket_date)=(month(current_date())-1) group by departure_date, flight_id order by sum(ticket_price) desc; 
+
+7. Select p.passenger_name, a.total_spent , a.total_travel, case
+when a.total_travel > 2 then "Frequent traveller"
+Else "Occasional traveller" End as travel_status from 
+(Select passenger_id, sum(ticket_price) as total_spent, count(passenger_id) as total_travel from tickets group by passenger_id) as a join passengers p using(passenger_id);
+
+8. Select month(ticket_date) as month, sum(ticket_price) as total_sales,count(passenger_id) as count from tickets group by month(ticket_date) order by month;
+
+9. Select player_id, game_id, Round(avg(time(play_date)),2) as avg_time from playerscores group by player_id, game_id order by avg_time Desc;
+
+10. Select game_id, game_name, count(player_id) as total_players from playerscores join games using(game_id) group by game_id order by total_players Desc limit 3;
+
+11. Select game_id, game_name, count(player_id) as total_players,Round(avg(score),2) as average_score, max(score) as Highest_score  from playerscores join games using(game_id) group by game_id order by total_players Desc;
+
+12. Select distinct player_id, p.player_name, p.registration_date, last_value(s.play_date) over() as last_play from players p join playerscores s using(player_id) where player_id in(Select player_id from playerscores where play_date < date_sub(current_date(),Interval 30 day)) and player_id not in(Select player_id from playerscores where play_date > date_sub(current_date(),Interval 30 day));
+
+13. Select doctor_id, d.doctor_name, sum(cost) as total_cost from treatments t join doctors d using(doctor_id) group by doctor_id order by total_cost Desc limit 5;
+
+14. Select treatment_id, treatment_name, sum(cost) as total_revenue, Round(((sum(cost)/(Select sum(cost) from treatments))*100),2) as contribution from treatments group by treatment_id;
+
+15. Select * from (Select patient_id, patient_name,admission_date, discharge_date, lag(discharge_date) over(partition by patient_id order by patient_id) as previous_discharge from patients) as a where Datediff(discharge_date,previous_discharge) <= 30;
+
+16. Select gender, diagnosis, Round(Avg(datediff(discharge_date,admission_date)),0) as LOS from patients group by gender, diagnosis order by gender, diagnosis;
+
+17. Select department, semester, Round(avg(grade),2) as Average_grade from enrollments e join courses c using(course_id) group by department, semester order by department, semester;
+
+18. Select c.department as major, count(student_id) as total_students, s.enrollment_year from enrollments e join courses c using(course_id) join students s using(student_id) group by c.department, enrollment_year order by total_students Desc Limit 5;
+
+19.Select * from (Select e.student_id, s.student_name, e.semester, sum(c.credits) as total_credits from enrollments e join students s using(student_id) join courses c using(course_id) group by student_id, semester) as a where total_credits >= 50;
+
+20. Select c.course_name, s.enrollment_year, count(e.student_id) as total_students from enrollments e join students s using(student_id) join courses c using(course_id) where s.enrollment_year > Year(date_sub(current_date(),interval 5 year)) group by c.course_name, s.enrollment_year order by total_students desc Limit 3; 
